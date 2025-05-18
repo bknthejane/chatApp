@@ -13,6 +13,7 @@
             signupForm.addEventListener('submit', function (event) {
                 event.preventDefault();
 
+                //Get form data
                 const fullName = document.getElementById('fullName').value.trim();
                 const email = document.getElementById('email').value.trim();
                 const username = document.getElementById('username').value.trim();
