@@ -1,70 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8" />
-    <title>Chatty - Sign up</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link href="/styles/styles.css" rel="stylesheet" />
-</head>
-
-<body>
-    <header>
-        <div class="header-content">
-            <div class="header-logo">Chatty</div>
-            <nav class="nav-links">
-                <a href="/index.html" class="nav-link">Home</a>
-                <a href="#" class="nav-link">Login</a>
-                <a href="/pages/sign-up.html" class="nav-link active">Sign Up</a>
-            </nav>
-        </div>
-    </header>
-
-    <main>
-        <div class="signup-container">
-            <div class="logo">Chatty</div>
-            <h1>Create your account</h1>
-
-            <form id="signupForm">
-                <div class="form-group">
-                    <label for="fullName">Full Name</label>
-                    <input type="text" id="fullName" name="fullName" placeholder="Enter your full name" required />
-                </div>
-
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="text" id="email" name="email" placeholder="Enter your email address" required />
-                </div>
-
-                <div class="form-group">
-                    <label for="username">Username</label>
-                    <input type="text" id="username" name="username" placeholder="Choose a username" required />
-                </div>
-
-                <div class="form-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" name="password" placeholder="Create a Password" required />
-                </div>
-
-                <div class="form-group">
-                    <label for="confirmPassword">Confirm Password</label>
-                    <input type="password" id="confirmPassword" name="confirmPassword"
-                        placeholder="Confirm your password" required />
-                </div>
-
-                <button type="submit" class="btn">Create Account</button>
-            </form>
-
-            <div class="footer">
-                <p>Already have an account? <a href="/pages/login.html">Log in</a></p>
-            </div>
-        </div>
-    </main>
-
-    <script src="/js/signup.js"></script>
-
-    <script>
-        // Wait for Html to fully load before running any Javascript
+// Wait for Html to fully load before running any Javascript
         document.addEventListener('DOMContentLoaded', function () {
             // Get reference to the form used in HTML using its id to attach listner:
             const signupForm = document.getElementById('signupForm');
@@ -79,7 +13,6 @@
             signupForm.addEventListener('submit', function (event) {
                 event.preventDefault();
 
-                //Get form data
                 const fullName = document.getElementById('fullName').value.trim();
                 const email = document.getElementById('email').value.trim();
                 const username = document.getElementById('username').value.trim();
@@ -176,7 +109,3 @@
                 successElement.style.display = 'block';
             }
         });
-    </script>
-</body>
-
-</html>
