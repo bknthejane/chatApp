@@ -7,10 +7,63 @@
 
 body {
     background-color: antiquewhite;
-    height: 100vh;
+    min-height: 100vh;
+    display: flex;
+    
+    flex-direction: column;
+}
+
+header {
+    background-color: white;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    padding: 16px 24px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.header-logo {
+    font-size: 24px;
+    font-weight: 700;
+    color: cadetblue;
+}
+
+.nav-links {
+    display: flex;
+    gap: 24px;
+}
+
+.nav-link {
+    color: #1e293b;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 16px;
+    transition: color 0.2s ease;
+}
+
+.nav-link:hover {
+    color: #4f46e5;
+}
+
+.nav-link.active {
+    color: #4f46e5
+}
+
+main {
+    flex: 1;
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: 40px 20px;
 }
 
 .welcome-container {
