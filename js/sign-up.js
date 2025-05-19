@@ -1,4 +1,4 @@
-// Wait for Html to fully load before running any Javascript
+        // Wait for Html to fully load before running any Javascript
         document.addEventListener('DOMContentLoaded', function () {
             // Get reference to the form used in HTML using its id to attach listner:
             const signupForm = document.getElementById('signupForm');
