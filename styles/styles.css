@@ -66,7 +66,7 @@ main {
     padding: 40px 20px;
 }
 
-.welcome-container, .signup-container {
+.welcome-container, .signup-container, .login-container {
     background-color: beige;
     border-radius: 15px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
@@ -86,6 +86,12 @@ main {
 h1 {
     font-size: 24px;
     color: #1e293b;
+    margin-bottom: 16px;
+}
+
+h2 {
+    font-size: 50px;
+    color: cadetblue;
     margin-bottom: 16px;
 }
 
