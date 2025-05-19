@@ -66,7 +66,7 @@ main {
     padding: 40px 20px;
 }
 
-.welcome-container {
+.welcome-container, .signup-container{
     background-color: beige;
     border-radius: 15px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
@@ -93,6 +93,33 @@ p {
     color: #64748b;
     margin-bottom: 32px;
     line-height: 1.6;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    font-size: 14px;
+    color: #475569;
+    margin-bottom: 6px;
+    font-weight: 500;
+}
+
+input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.2s ease;
+}
+
+input:focus {
+    outline: none;
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
 }
 
 .btn {
