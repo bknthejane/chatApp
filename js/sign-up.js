@@ -1,112 +1,113 @@
-        // Wait for Html to fully load before running any Javascript
-        document.addEventListener('DOMContentLoaded', function () {
-            // Get reference to the form used in HTML using its id to attach listner:
-            const signupForm = document.getElementById('signupForm');
+// Run the script only after the entire HTML content has loaded
+document.addEventListener('DOMContentLoaded', function () {
+    // Reference the signup form using its ID
+    const signupForm = document.getElementById('signupForm');
 
-            //Initialise an empty list of users in localStorage:
-            if (!localStorage.getItem('users')) {
-                //Use stringify or parse since localStorage only stores strings
-                localStorage.setItem('users', JSON.stringify([]));
-            }
+    // Initialize the user list in localStorage if it doesn't already exist
+    if (!localStorage.getItem('users')) {
+        localStorage.setItem('users', JSON.stringify([])); // localStorage only stores strings
+    }
 
-            //To prevent page reload (default), therefore form submission will be handled manually:
-            signupForm.addEventListener('submit', function (event) {
-                event.preventDefault();
+    // Handle form submission manually (prevent page reload)
+    signupForm.addEventListener('submit', function (event) {
+        event.preventDefault();
 
-                //Get form data
-                const fullName = document.getElementById('fullName').value.trim();
-                const email = document.getElementById('email').value.trim();
-                const username = document.getElementById('username').value.trim();
-                const password = document.getElementById('password').value;
-                const confirmPassword = document.getElementById('confirmPassword').value;
+        // Retrieve values from form fields and trim whitespace
+        const fullName = document.getElementById('fullName').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const username = document.getElementById('username').value.trim();
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
 
-                // Check if any of the required fields are empty
-                if (!fullName || !email || !username || !password || !confirmPassword) {
-                    showError('All fields are required');
-                    return;
-                }
+        // Ensure all fields are filled in
+        if (!fullName || !email || !username || !password || !confirmPassword) {
+            showError('All fields are required.');
+            return;
+        }
 
-                // Usage of regualr expression to check email address looks valid:
-                const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-                if (!emailRegex.test(email)) {
-                    showError('Please enter a valid email address');
-                    return;
-                }
+        // Basic email format validation using a regular expression
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailPattern.test(email)) {
+            showError('Please enter a valid email address.');
+            return;
+        }
 
-                if (password !== confirmPassword) {
-                    showError('Passwords do not match');
-                    return;
-                }
+        // Check for password confirmation mismatch
+        if (password !== confirmPassword) {
+            showError('Passwords do not match.');
+            return;
+        }
 
-                if (password.length < 6) {
-                    showError('Password must be at least 6 characters long');
-                    return;
-                }
+        // Enforce minimum password length
+        if (password.length < 6) {
+            showError('Password must be at least 6 characters long.');
+            return;
+        }
 
-                //Gets the existing users from localStorage:
-                const users = JSON.parse(localStorage.getItem('users'));
-                const usernameExists = users.some(user => user.username.toLowerCase() === username.toLowerCase());
+        // Retrieve existing users from localStorage and check if username is already taken
+        const existingUsers = JSON.parse(localStorage.getItem('users'));
+        const usernameTaken = existingUsers.some(user => user.username.toLowerCase() === username.toLowerCase());
 
-                if (usernameExists) {
-                    showError('Username already exists. Please choose another one.');
-                    return;
-                }
+        if (usernameTaken) {
+            showError('Username already exists. Please choose a different one.');
+            return;
+        }
 
+        // Create new user object
+        const newUser = {
+            fullName,
+            email,
+            username,
+            password,
+            profilePic: '',
+            online: false,
+            createdAt: new Date().toISOString()
+        };
 
-                //Create and store new user:
-                const newUser = {
-                    fullName,
-                    email,
-                    username,
-                    password,
-                    profilePic: '',
-                    online: false,
-                    createdAt: new Date().toISOString()
-                };
+        // Save the new user to localStorage
+        existingUsers.push(newUser);
+        localStorage.setItem('users', JSON.stringify(existingUsers));
 
-                users.push(newUser);
-                localStorage.setItem('users', JSON.stringify(users));
-                //Sets up an empty message structure for the new user
-                localStorage.setItem(`messages_${username}`, JSON.stringify({ group: [], private: {} }));
+        // Initialize an empty message structure for the user
+        localStorage.setItem(`messages_${username}`, JSON.stringify({ group: [], private: {} }));
 
-                showSuccess('Account created successfully! Redirecting to login...');
+        // Display success message and redirect to login page
+        showSuccess('Account created successfully! Redirecting to login...');
 
-                setTimeout(() => {
-                    window.location.href = '/pages/login.html';
-                }, 2000);
-            });
+        setTimeout(() => {
+            window.location.href = './pages/login.html';
+        }, 2000);
+    });
 
+    // Show a temporary error message under the form
+    function showError(message) {
+        let errorBox = document.querySelector('.error-message');
 
-            // Helper functions to display a temporary error message near the submit button:
-            function showError(message) {
-                let errorElement = document.querySelector('.error-message');
+        if (!errorBox) {
+            errorBox = document.createElement('div');
+            errorBox.className = 'error-message';
+            signupForm.insertBefore(errorBox, signupForm.querySelector('button'));
+        }
 
-                if (!errorElement) {
-                    errorElement = document.createElement('div');
-                    errorElement.className = 'error-message';
-                    signupForm.insertBefore(errorElement, signupForm.querySelector('button'));
-                }
+        errorBox.textContent = message;
+        errorBox.style.display = 'block';
 
-                errorElement.textContent = message;
-                errorElement.style.display = 'block';
+        setTimeout(() => {
+            errorBox.style.display = 'none';
+        }, 3000);
+    }
 
-                setTimeout(() => {
-                    errorElement.style.display = 'none';
-                }, 3000);
-            }
+    // Show a success message under the form
+    function showSuccess(message) {
+        let successBox = document.querySelector('.success-message');
 
+        if (!successBox) {
+            successBox = document.createElement('div');
+            successBox.className = 'success-message';
+            signupForm.insertBefore(successBox, signupForm.querySelector('button'));
+        }
 
-            // Helper function to display success message
-            function showSuccess(message) {
-                let successElement = document.querySelector('.success-message');
-
-                if (!successElement) {
-                    successElement = document.createElement('div');
-                    successElement.className = 'success-message';
-                    signupForm.insertBefore(successElement, signupForm.querySelector('button'));
-                }
-
-                successElement.textContent = message;
-                successElement.style.display = 'block';
-            }
-        });
+        successBox.textContent = message;
+        successBox.style.display = 'block';
+    }
+});

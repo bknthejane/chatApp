@@ -1,4 +1,74 @@
 <!DOCTYPE html>
 <html>
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Chatty - Welcome</title>
+    <link href="../styles/chat.css" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Header section -->
+    <div class="header">
+        <h1>Chatty</h1>
+        <button class="logout-btn" id="logoutBtn">Logout</button>
+    </div>
+
+    <!-- Main container -->
+    <div class="container" id="appContainer">
+        <!-- Sidebar with contacts -->
+        <div class="sidebar">
+            <div class="user-profile">
+                <div class="profile-pic" id="profileInitial">U</div>
+                <div class="user-info">
+                    <div class="username" id="usernameDisplay">Loading...</div>
+                    <div class="user-email" id="userEmailDisplay"></div>
+                </div>
+            </div>
+            <button class="add-friend-btn" id="addFriendBtn">+ Add Friend</button>
+            <div class="contacts-list" id="contactsList">
+                <!-- Contacts will be loaded here -->
+            </div>
+        </div>
+
+        <!-- Main chat area -->
+        <div class="main-content">
+            <div class="chat-header" id="chatHeader" style="display: none;">
+                <h3>
+                    <span id="currentContactName"></span>
+                    <span class="status-indicator" id="contactStatusIndicator"></span>
+                </h3>
+                <div class="last-seen" id="contactLastSeen"></div>
+            </div>
+            <div class="chat-area" id="chatArea">
+                <!-- Messages will be shown here -->
+            </div>
+            <div class="typing-indicator" id="typingIndicator">Contact is typing...</div>
+            <div class="message-input" id="messageInputArea">
+                <input type="text" id="messageInput" placeholder="Type a message...">
+                <button id="sendButton">Send</button>
+            </div>
+            <div class="welcome-message" id="welcomeMessage">
+                <p>Select a user to start chatting...</p>
+            </div>
+        </div>
+    </div>
     
+    <!-- Add Friend Modal -->
+    <div id="addFriendModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeModal">&times;</span>
+            <h2>Add Friend</h2>
+            <div class="search-container">
+                <input type="text" id="searchUsers" class="search-input" placeholder="Search users by name or email...">
+            </div>
+            <div class="user-list" id="userList">
+                <!-- User list will be populated here -->
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/chat.js"></script>
+</body>
+
 </html>
