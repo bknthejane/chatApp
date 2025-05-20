@@ -9,39 +9,41 @@
 
 <body>
     <header>
-        <div class="header-content">
-            <div class="header-logo">Chatty</div>
+        <section class="header-content">
+            <article class="header-logo">Chatty</article>
             <nav class="nav-links">
                 <a href="../index.html" class="nav-link">Home</a>
                 <a href="./login.html" class="nav-link active">Login</a>
                 <a href="./sign-up.html" class="nav-link">Sign Up</a>
             </nav>
-        </div>
+        </section>
     </header>
+
     <main>
-        <div class="login-container">
+        <section class="login-container">
             <h1>WELCOME BACK TO</h1>
             <h2>Chatty</h2>
 
             <form id="login-form">
-                <div class="form-group">
+                <article class="form-group">
                     <label for="email">Email or Username</label>
                     <input type="text" id="email" name="email" placeholder="Enter your email or username" required>
-                </div>
+                </article>
 
-                <div class="form-group">
+                <article class="form-group">
                     <label for="password">Password</label>
                     <input type="password" id="password" name="password" placeholder="Enter your password" required>
-                </div>
+                </article>
 
                 <button type="submit" class="btn">Log in</button>
             </form>
 
-            <div class="footer">
-                <p>Don't have an account? <a href="#">Sign up</a></p>
-            </div>
-        </div>
+            <footer class="footer">
+                <p>Don't have an account? <a href="./sign-up.html">Sign up</a></p>
+            </footer>
+        </section>
     </main>
+
     <script src="../js/login.js"></script>
 </body>
 
