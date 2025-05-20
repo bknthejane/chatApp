@@ -75,7 +75,7 @@ document.addEventListener('DOMContentLoaded', function () {
         showSuccess('Account created successfully! Redirecting to login...');
 
         setTimeout(() => {
-            window.location.href = './pages/login.html';
+            window.location.href = '../pages/login.html';
         }, 2000);
     });
 
