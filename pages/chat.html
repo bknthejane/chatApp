@@ -8,66 +8,75 @@
 </head>
 
 <body>
-    <!-- Header section -->
-    <div class="header">
+    <header class="header">
         <h1>Chatty</h1>
         <button class="logout-btn" id="logoutBtn">Logout</button>
-    </div>
+    </header>
 
-    <!-- Main container -->
-    <div class="container" id="appContainer">
-        <!-- Sidebar with contacts -->
-        <div class="sidebar">
-            <div class="user-profile">
+    <main class="container" id="appContainer">
+        <aside class="sidebar">
+            <section class="user-profile">
                 <div class="profile-pic" id="profileInitial">U</div>
                 <div class="user-info">
                     <div class="username" id="usernameDisplay">Loading...</div>
                     <div class="user-email" id="userEmailDisplay"></div>
                 </div>
-            </div>
+            </section>
             <button class="add-friend-btn" id="addFriendBtn">+ Add Friend</button>
-            <div class="contacts-list" id="contactsList">
-                <!-- Contacts will be loaded here -->
-            </div>
-        </div>
+            <button class="create-group-btn" id="createGroupBtn">+ Create Group</button>
+            <section class="contacts-list" id="contactsList"></section>
+        </aside>
 
-        <!-- Main chat area -->
-        <div class="main-content">
-            <div class="chat-header" id="chatHeader" style="display: none;">
+        <section class="main-content">
+            <header class="chat-header" id="chatHeader" style="display: none;">
                 <h3>
                     <span id="currentContactName"></span>
                     <span class="status-indicator" id="contactStatusIndicator"></span>
                 </h3>
                 <div class="last-seen" id="contactLastSeen"></div>
-            </div>
-            <div class="chat-area" id="chatArea">
-                <!-- Messages will be shown here -->
-            </div>
+            </header>
+            <section class="chat-area" id="chatArea"></section>
             <div class="typing-indicator" id="typingIndicator">Contact is typing...</div>
             <div class="message-input" id="messageInputArea">
                 <input type="text" id="messageInput" placeholder="Type a message...">
                 <button id="sendButton">Send</button>
             </div>
-            <div class="welcome-message" id="welcomeMessage">
+            <article class="welcome-message" id="welcomeMessage">
                 <p>Select a user to start chatting...</p>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Add Friend Modal -->
-    <div id="addFriendModal" class="modal">
+            </article>
+        </section>
+    </main>
+
+    <section id="addFriendModal" class="modal">
         <div class="modal-content">
             <span class="close-modal" id="closeModal">&times;</span>
             <h2>Add Friend</h2>
             <div class="search-container">
                 <input type="text" id="searchUsers" class="search-input" placeholder="Search users by name or email...">
             </div>
-            <div class="user-list" id="userList">
-                <!-- User list will be populated here -->
+            <div class="user-card">
+                <div class="user-list" id="userList"></div>
+                <div class="addFriendBtn" id="add-friend-btn"></div>
             </div>
         </div>
-    </div>
+    </section>
 
+    <section id="createGroupModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeGroupModal">&times;</span>
+            <h2>Create Group</h2>
+            <input type="text" id="groupNameInput" class="search-input" placeholder="Enter group name">
+            <div class="group-friends-list" id="groupFriendsList"></div>
+            <button id="createGroupConfirmBtn">Create Group</button>
+        </div>
+    </section>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/status.js"></script>
+    <script src="../js/contacts.js"></script>
+    <script src="../js/groups.js"></script>
+    <script src="../js/messages.js"></script>
     <script src="../js/chat.js"></script>
 </body>
 
