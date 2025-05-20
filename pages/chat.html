@@ -23,6 +23,7 @@
                 </div>
             </section>
             <button class="add-friend-btn" id="addFriendBtn">+ Add Friend</button>
+            <button class="create-group-btn" id="createGroupBtn">+ Create Group</button>
             <section class="contacts-list" id="contactsList"></section>
         </aside>
 
@@ -53,10 +54,29 @@
             <div class="search-container">
                 <input type="text" id="searchUsers" class="search-input" placeholder="Search users by name or email...">
             </div>
-            <div class="user-list" id="userList"></div>
+            <div class="user-card">
+                <div class="user-list" id="userList"></div>
+                <div class="addFriendBtn" id="add-friend-btn"></div>
+            </div>
         </div>
     </section>
 
+    <section id="createGroupModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeGroupModal">&times;</span>
+            <h2>Create Group</h2>
+            <input type="text" id="groupNameInput" class="search-input" placeholder="Enter group name">
+            <div class="group-friends-list" id="groupFriendsList"></div>
+            <button id="createGroupConfirmBtn">Create Group</button>
+        </div>
+    </section>
+
+    <script src="../js/main.js"></script>
+    <script src="../js/auth.js"></script>
+    <script src="../js/status.js"></script>
+    <script src="../js/contacts.js"></script>
+    <script src="../js/groups.js"></script>
+    <script src="../js/messages.js"></script>
     <script src="../js/chat.js"></script>
 </body>
 

@@ -145,7 +145,7 @@ body {
     margin-top: 2px;
 }
 
-.add-friend-btn {
+.add-friend-btn, .create-group-btn {
     width: 100%;
     padding: 12px;
     background-color: #4f46e5;
@@ -159,10 +159,52 @@ body {
     transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
-.add-friend-btn:hover {
+.add-friend-btn:hover, .create-group-btn:hover {
     background-color: #4338ca;
     transform: translateY(-2px);
 }
+
+.search-container {
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.search-input {
+    width: 100%;
+    max-width: 400px;
+    padding: 10px 14px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #4338ca;
+    box-shadow: 0 0 0 3px rgba(67, 56, 202, 0.2);
+}
+
+
+.add-user-btn, #createGroupConfirmBtn {
+    background-color: #4338ca;
+    color: white;
+    border: none;
+    padding: 8px 14px;
+    margin-top: 2px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.add-user-btn:hover, #createGroupConfirmBtn:hover {
+    background-color: #3730a3;
+}
+
 
 /* Chat area */
 .chat-area {
@@ -304,13 +346,24 @@ body {
 }
 
 .modal-content {
-    background-color: white;
+    background-color: antiquewhite;
     margin: 10% auto;
     padding: 24px;
     border-radius: 12px;
     max-width: 480px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
+
+.user-card {
+    background-color: beige;
+    padding: 16px;
+    margin-top: 16px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    max-height: 300px;
+    overflow-y: auto;
+}
+
 
 .close-modal {
     font-size: 24px;
