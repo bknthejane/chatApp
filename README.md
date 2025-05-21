@@ -1,5 +1,3 @@
-# chatApp
-
 # Real-Time Chat Application
 
 ## Overview  
@@ -35,3 +33,6 @@ A lightweight, real-time chat application built with vanilla JavaScript, HTML5, 
 -  Clone the repository:  
    ```bash
    git clone https://github.com/bknthejane/chatApp.git
+
+### WireFrames  
+- https://www.figma.com/proto/PgiVvpSWzrlhwuxXLJScry/Untitled?node-id=11-72&t=FDkJHm4FAdwpUb73-1
