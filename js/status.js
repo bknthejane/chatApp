@@ -16,7 +16,7 @@ function updateUserStatus(username, isOnline) {
 // Update the typing status between sender and receiver in localStorage
 function updateTypingStatus(senderUsername, receiverUsername, isTyping) {
     // Retrieve current typing statuses or initialize an empty object
-    const typingStatuses = JSON.parse(localStorage.getItem('typingStatuses')) || {};
+    const typingStatuses = JSON.parse(sessionStorage.getItem('typingStatuses')) || {};
     
     // Create a unique key for the typing status between sender and receiver
     const typingKey = `${senderUsername}_${receiverUsername}`;

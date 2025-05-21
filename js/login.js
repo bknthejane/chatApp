@@ -30,7 +30,7 @@ document.addEventListener('DOMContentLoaded', function () {
         showSuccess(`Welcome back, ${matchingUser.username}! Redirecting...`);
 
         // Save logged-in user info
-        localStorage.setItem('loggedInUser', JSON.stringify(matchingUser));
+        sessionStorage.setItem('loggedInUser', JSON.stringify(matchingUser));
 
         // Redirect to chat page after short delay
         setTimeout(() => {

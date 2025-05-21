@@ -10,8 +10,8 @@ function sendMessage() {
     const contactUsername = chatArea.dataset.currentContact;
     // Determine if the chat is a group chat (string 'true' converted to boolean)
     const isGroup = chatArea.dataset.isGroup === 'true';
-    // Get the current logged-in user info from localStorage
-    const currentUser = JSON.parse(localStorage.getItem('loggedInUser'));
+    // Get the current logged-in user info from sessionStorage
+    const currentUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
 
     // If no contact is selected, alert the user and stop
     if (!contactUsername) {
@@ -71,7 +71,7 @@ function sendMessage() {
 // Function to display one-on-one chat messages with a contact
 function displayMessages(contactUsername) {
     // Get current logged-in user
-    const currentUser = JSON.parse(localStorage.getItem('loggedInUser'));
+    const currentUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
     // Construct keys for both directions of conversation
     const chatKey = `chat_${currentUser.username}_${contactUsername}`;
     const chatKeyReverse = `chat_${contactUsername}_${currentUser.username}`;
@@ -144,7 +144,7 @@ function displayMessages(contactUsername) {
 // Function to display group chat messages
 function displayGroupMessages(groupId) {
     // Get current user
-    const currentUser = JSON.parse(localStorage.getItem('loggedInUser'));
+    const currentUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
     // Get the group chat messages key
     const groupChatKey = `group_chat_${groupId}`;
     // Retrieve group messages or start with empty array
@@ -216,7 +216,7 @@ function displayGroupMessages(groupId) {
 // Function to mark a message as read for one-on-one chats
 function markMessageAsRead(senderUsername, timestamp) {
     // Get current logged-in user
-    const currentUser = JSON.parse(localStorage.getItem('loggedInUser'));
+    const currentUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
     // Construct chat key for messages from sender to current user
     const chatKey = `chat_${senderUsername}_${currentUser.username}`;
     // Get messages or empty array
@@ -240,7 +240,7 @@ function markMessageAsRead(senderUsername, timestamp) {
 // Function to check periodically for new messages and update the chat display if needed
 function checkForNewMessages() {
     // Get current user info
-    const currentUser = JSON.parse(localStorage.getItem('loggedInUser'));
+    const currentUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
     if (!currentUser) return;
 
     // Get chat area and current contact/group info

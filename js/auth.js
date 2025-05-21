@@ -2,7 +2,7 @@
 // If no user is found, it displays a message prompting to login and returns false
 // Otherwise, returns the logged-in user object
 function checkAuth() {
-    const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+    const loggedInUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
 
     if (!loggedInUser) {
         // Display message if user is not logged in
@@ -20,11 +20,11 @@ function checkAuth() {
 // Logs out the current user by updating their status to offline,
 // removing user info from localStorage, and redirecting to login page
 function logout() {
-    const currentUser = JSON.parse(localStorage.getItem('loggedInUser'));
+    const currentUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
     if (currentUser) {
         updateUserStatus(currentUser.username, false); // Update user status to offline
     }
-    localStorage.removeItem('loggedInUser'); // Remove user from localStorage
+    sessionStorage.removeItem('loggedInUser'); // Remove user from localStorage
     window.location.href = './login.html'; // Redirect to login page
 }
 
