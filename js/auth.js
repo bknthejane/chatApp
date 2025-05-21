@@ -1,4 +1,4 @@
-// Checks if a user is currently logged in by looking in localStorage
+// Checks if a user is currently logged in by looking in sessionStorage
 // If no user is found, it displays a message prompting to login and returns false
 // Otherwise, returns the logged-in user object
 function checkAuth() {
@@ -24,7 +24,7 @@ function logout() {
     if (currentUser) {
         updateUserStatus(currentUser.username, false); // Update user status to offline
     }
-    sessionStorage.removeItem('loggedInUser'); // Remove user from localStorage
+    sessionStorage.removeItem('loggedInUser'); // Remove user from sessionStorage
     window.location.href = './login.html'; // Redirect to login page
 }
 
