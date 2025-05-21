@@ -86,11 +86,10 @@ function resetChatArea() {
 
 // Updates the statuses of contacts and the UI accordingly
 function updateContactStatuses() {
-    const currentUser = JSON.parse(localStorage.getItem('loggedInUser'));
+    const currentUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
     if (!currentUser) return; // Exit if no user logged in
 
     // Load contacts and global user statuses from localStorage
-    const contacts = JSON.parse(localStorage.getItem(`contacts_${currentUser.username}`)) || [];
     const userStatuses = JSON.parse(localStorage.getItem('userStatuses')) || {};
 
     // Update the logged-in user's status to online
@@ -144,7 +143,7 @@ function setupEventListeners() {
     messageInput.addEventListener('input', function() {
         const chatArea = document.getElementById('chatArea');
         const contactUsername = chatArea.dataset.currentContact;
-        const loggedInUser = JSON.parse(localStorage.getItem('loggedInUser'));
+        const loggedInUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
 
         if (contactUsername) {
             // Notify system that the user started typing

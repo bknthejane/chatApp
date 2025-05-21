@@ -1,7 +1,7 @@
 // Loads the current user's friends (contacts) for selection when creating a group
 function loadFriendsForGroup() {
     // Get the logged-in user info from localStorage
-    const currentUser = JSON.parse(localStorage.getItem('loggedInUser'));
+    const currentUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
     // Retrieve the user's contacts from localStorage or default to empty array
     const contacts = JSON.parse(localStorage.getItem(`contacts_${currentUser.username}`)) || [];
     // Get the container element where the friends will be displayed
@@ -33,7 +33,7 @@ function loadFriendsForGroup() {
 // Creates a new group chat with the selected friends and group name
 function createGroup() {
     // Get the logged-in user info
-    const currentUser = JSON.parse(localStorage.getItem('loggedInUser'));
+    const currentUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
     // Get the group name entered by the user and trim whitespace
     const groupName = document.getElementById('groupNameInput').value.trim();
     // Get usernames of selected friends via checked checkboxes

@@ -1,7 +1,7 @@
 // Load and display the list of contacts and groups for the current user
 function loadContacts() {
-    // Get the currently logged-in user from localStorage
-    const currentUser = JSON.parse(localStorage.getItem('loggedInUser'));
+    // Get the currently logged-in user from sessionStorage
+    const currentUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
 
     // Retrieve contacts and groups of the current user from localStorage
     const contacts = JSON.parse(localStorage.getItem(`contacts_${currentUser.username}`)) || [];
@@ -121,18 +121,22 @@ function loadContacts() {
 
 // Remove a contact by username and update storage and UI accordingly
 function removeContact(username) {
-    // Get current logged-in user
-    const currentUser = JSON.parse(localStorage.getItem('loggedInUser'));
-    // Get current user's contacts
+    const currentUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
     let contacts = JSON.parse(localStorage.getItem(`contacts_${currentUser.username}`)) || [];
-    // Filter out the contact to remove
+
+    // Filter out the contact
     contacts = contacts.filter(contact => contact.username !== username);
-    // Save updated contacts back to localStorage
+
+    // Save back to localStorage
     localStorage.setItem(`contacts_${currentUser.username}`, JSON.stringify(contacts));
-    // Remove chat history with this contact from localStorage
     localStorage.removeItem(`chat_${currentUser.username}_${username}`);
-    // Reload contacts to update UI
-    loadContacts();
+
+    // Remove the DOM element for this contact
+    const button = document.querySelector(`.remove-contact[data-username="${username}"]`);
+    if (button) {
+        const contactItem = button.closest('.contact-item');
+        if (contactItem) contactItem.remove();
+    }
 
     // Clear chat area if the removed contact was currently open
     const chatArea = document.getElementById('chatArea');
@@ -141,9 +145,10 @@ function removeContact(username) {
     }
 }
 
+
 // Add a new contact (friend) for the current user and reciprocally add current user to the other user's contacts
 function addContact(user) {
-    const currentUser = JSON.parse(localStorage.getItem('loggedInUser'));
+    const currentUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
     // Get current user's contacts
     const contacts = JSON.parse(localStorage.getItem(`contacts_${currentUser.username}`)) || [];
 
@@ -188,7 +193,7 @@ function filterUsers(searchTerm) {
 
 // Load the list of all users excluding current user and existing contacts, for adding new contacts
 function loadUserList() {
-    const currentUser = JSON.parse(localStorage.getItem('loggedInUser'));
+    const currentUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
     const allUsers = JSON.parse(localStorage.getItem('users')) || [];
     const contacts = JSON.parse(localStorage.getItem(`contacts_${currentUser.username}`)) || [];
 
@@ -231,3 +236,5 @@ function displayUserList(users) {
         userList.appendChild(userItem);
     });
 }
+
+
