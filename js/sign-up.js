@@ -1,3 +1,13 @@
+function encryption(password) {
+    let encrypted = '';
+
+    for (let i = 0; i < password.length; i++) {
+        encrypted += String.fromCharCode(password.charCodeAt(i) + 3);
+    }
+
+    return encrypted;
+}
+
 // Run the script only after the entire HTML content has loaded
 document.addEventListener('DOMContentLoaded', function () {
     // Reference the signup form using its ID
@@ -58,7 +68,7 @@ document.addEventListener('DOMContentLoaded', function () {
             fullName,
             email,
             username,
-            password,
+            password: encryption(password),
             profilePic: '',
             online: false,
             createdAt: new Date().toISOString()

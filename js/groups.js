@@ -97,7 +97,7 @@ function createGroup() {
 // Allows the current user to leave a group
 function leaveGroup(groupId) {
     // Get the logged-in user info
-    const currentUser = JSON.parse(localStorage.getItem('loggedInUser'));
+    const currentUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
     // Retrieve the current user's groups
     let groups = JSON.parse(localStorage.getItem(`groups_${currentUser.username}`)) || [];
     // Find the index of the group to leave
