@@ -1,3 +1,14 @@
+function decryption(encrypted) {
+    let decrypted = '';
+
+    for (let i = 0; i < encrypted.length; i++) {
+        decrypted += String.fromCharCode(encrypted.charCodeAt(i) - 3);
+    }
+
+    return decrypted;
+}
+
+
 // Run the script only after the entire HTML content has loaded
 document.addEventListener('DOMContentLoaded', function () {
     // Reference the login form using its ID
@@ -21,7 +32,7 @@ document.addEventListener('DOMContentLoaded', function () {
         );
 
         // If no matching user or password is incorrect, show an error
-        if (!matchingUser || matchingUser.password !== enteredPassword) {
+        if (!matchingUser || decryption(matchingUser.password) !== enteredPassword) {
             showError('Invalid email/username or password');
             return;
         }
