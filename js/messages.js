@@ -1,16 +1,30 @@
-// Function to send a message either to a contact or a group chat
-function sendMessage() {
-    // Get the input element where the user types the message
+/* sendMessage()
+  Sends a chat message either to a selected contact (one-on-one chat) or a group chat.
+ 
+  Steps:
+  1. Retrieve the message input from the user and trim whitespace.
+  2. Identify the current chat target (contact or group) and check if it is a group chat.
+  3. Get the currently logged-in user's info from sessionStorage.
+  4. Validate that a contact/group is selected and the message is not empty.
+  5. If it's a group chat:
+     - Use a unique localStorage key for that group's messages.
+     - Retrieve existing messages, add the new message with sender and timestamp.
+     - Save updated messages and refresh the group chat UI.
+  6. If it's a one-on-one chat:
+     - Use a unique localStorage key based on both usernames.
+     - Retrieve existing messages, add the new message with sender, receiver, timestamp, and read status.
+     - Save updated messages and refresh the individual chat UI.
+  7. Clear the message input box, update typing status, and scroll the chat area to show the new message. */
+
+const sendMessage = () => {
     const messageInput = document.getElementById('messageInput');
-    // Get the trimmed message text
     const message = messageInput.value.trim();
-    // Get the chat display area element
     const chatArea = document.getElementById('chatArea');
-    // Get the username of the currently selected contact or group from the chat area data attribute
+
     const contactUsername = chatArea.dataset.currentContact;
-    // Determine if the chat is a group chat (string 'true' converted to boolean)
+
     const isGroup = chatArea.dataset.isGroup === 'true';
-    // Get the current logged-in user info from sessionStorage
+
     const currentUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
 
     // If no contact is selected, alert the user and stop
@@ -68,8 +82,22 @@ function sendMessage() {
     chatArea.scrollTop = chatArea.scrollHeight;
 }
 
-// Function to display one-on-one chat messages with a contact
-function displayMessages(contactUsername) {
+/* displayMessages()
+  Displays one-on-one chat messages between the logged-in user and a selected contact.
+ 
+  Steps:
+  1. Retrieve messages stored in localStorage for both directions (user->contact and contact->user).
+  2. Merge and sort messages chronologically.
+  3. Clear the chat display area.
+  4. If no messages exist, show a prompt to start the conversation.
+  5. Otherwise, iterate through messages:
+     - Insert date separators when the date changes between messages.
+     - Render each message differently if sent or received.
+     - For sent messages, show read status.
+     - For received messages, mark them as read.
+  6. Scroll the chat area to the bottom. */
+
+const displayMessages = (contactUsername) => {
     // Get current logged-in user
     const currentUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
     // Construct keys for both directions of conversation
@@ -91,7 +119,8 @@ function displayMessages(contactUsername) {
         chatArea.innerHTML = `<div class="message received">Start a conversation with ${contactUsername}...</div>`;
     } else {
         let lastDate = null;
-        allMessages.forEach(msg => {
+        for (let i = 0; i < allMessages.length; i++) {
+            const msg = allMessages[i];
             const msgDate = new Date(msg.timestamp);
             const msgDateStr = msgDate.toDateString();
 
@@ -135,14 +164,28 @@ function displayMessages(contactUsername) {
 
             // Append the message to the chat area
             chatArea.appendChild(messageElement);
-        });
+        }
+
     }
     // Scroll to bottom after rendering messages
     chatArea.scrollTop = chatArea.scrollHeight;
 }
 
-// Function to display group chat messages
-function displayGroupMessages(groupId) {
+/* displayGroupMessages()
+  Displays messages in a group chat.
+ 
+  Steps:
+  1. Retrieve all group messages from localStorage.
+  2. Clear the chat display area.
+  3. If no messages, show a system message indicating the group is empty.
+  4. Otherwise, iterate through messages:
+     - Insert date separators between days.
+     - Display system messages with distinct styling.
+     - Display user messages with sender name (if not current user).
+     - Show message text and timestamp.
+  5. Scroll the chat area to the bottom. */  
+
+const displayGroupMessages = (groupId) => {
     // Get current user
     const currentUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
     // Get the group chat messages key
@@ -158,7 +201,8 @@ function displayGroupMessages(groupId) {
         chatArea.innerHTML = `<div class="message system">No messages in this group yet</div>`;
     } else {
         let lastDate = null;
-        messages.forEach(msg => {
+        for (let i = 0; i < messages.length; i++) {
+            const msg = messages[i];
             const msgDate = new Date(msg.timestamp);
             const msgDateStr = msgDate.toDateString();
 
@@ -207,29 +251,41 @@ function displayGroupMessages(groupId) {
                 // Append the message to chat area
                 chatArea.appendChild(messageElement);
             }
-        });
+        }
+
     }
     // Scroll chat to bottom after loading messages
     chatArea.scrollTop = chatArea.scrollHeight;
 }
 
-// Function to mark a message as read for one-on-one chats
-function markMessageAsRead(senderUsername, timestamp) {
-    // Get current logged-in user
+/* markMessageAsRead()
+  Marks a specific one-on-one chat message as read.
+ 
+  Parameters:
+  - senderUsername: the username of the sender of the message.
+  - timestamp: the timestamp of the message to identify it uniquely.
+ 
+  Steps:
+  1. Retrieve messages sent by the sender to the current user.
+  2. Find the message matching the timestamp and update its read status if not already read.
+  3. Save the updated messages back to localStorage. */
+
+const markMessageAsRead = (senderUsername, timestamp) => {
     const currentUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
-    // Construct chat key for messages from sender to current user
     const chatKey = `chat_${senderUsername}_${currentUser.username}`;
-    // Get messages or empty array
+
     const messages = JSON.parse(localStorage.getItem(chatKey)) || [];
     let updated = false;
 
     // Find the message matching the timestamp and mark it as read if not already
-    messages.forEach(msg => {
+    for (let i = 0; i < messages.length; i++) {
+        const msg = messages[i];
         if (msg.timestamp === timestamp && !msg.read) {
             msg.read = true;
             updated = true;
         }
-    });
+    }
+
 
     // Save back to localStorage only if something was updated
     if (updated) {
@@ -237,8 +293,12 @@ function markMessageAsRead(senderUsername, timestamp) {
     }
 }
 
-// Function to check periodically for new messages and update the chat display if needed
-function checkForNewMessages() {
+/* checkForNewMessages()
+  Periodically checks for new messages in the currently open chat (one-on-one or group).
+  If new messages are found (more than currently displayed), updates the chat display accordingly.
+  Also triggers a refresh of the contacts list to update statuses or new message notifications. */
+
+const checkForNewMessages = () => {
     // Get current user info
     const currentUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
     if (!currentUser) return;
