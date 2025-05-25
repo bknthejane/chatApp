@@ -1,126 +1,138 @@
-// Load and display the list of contacts and groups for the current user
-function loadContacts() {
-    // Get the currently logged-in user from sessionStorage
+/* loadContacts()
+  
+  - Retrieves the logged-in user's contacts, groups, and user status from localStorage.
+  - For each contact and group, retrieves the latest message and status.
+  - Merges contacts and groups, sorting them by latest message timestamp.
+  - Dynamically creates HTML elements for each contact/group with options to remove or leave.
+  - Handles both individual users and group contacts separately for display.
+  - If no contacts/groups exist, a message is shown to inform the user. */
+
+const loadContacts = () => {
     const currentUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
 
-    // Retrieve contacts and groups of the current user from localStorage
     const contacts = JSON.parse(localStorage.getItem(`contacts_${currentUser.username}`)) || [];
     const groups = JSON.parse(localStorage.getItem(`groups_${currentUser.username}`)) || [];
-    // Retrieve the online status of users from localStorage
+
     const userStatuses = JSON.parse(localStorage.getItem('userStatuses')) || {};
 
-    // Get the container element where contacts will be displayed
-    const contactsList = document.getElementById('contactsList');
-    contactsList.innerHTML = ''; // Clear current contacts list
 
-    // If no contacts and no groups, show a message and return early
+    const contactsList = document.getElementById('contactsList');
+    contactsList.innerHTML = '';
+
     if (contacts.length === 0 && groups.length === 0) {
         contactsList.innerHTML = '<div style="text-align: center; padding: 20px; color: #666;">No friends or groups added yet</div>';
         return;
     }
 
-    // For each contact, gather their last message and status info
-    const contactsWithLastMessage = contacts.map(contact => {
-        // Construct chat keys for messages between current user and contact in both directions
+    const contactsWithLastMessage = [];
+
+    for (let i = 0; i < contacts.length; i++) {
+        const contact = contacts[i];
+
         const chatKey = `chat_${currentUser.username}_${contact.username}`;
         const chatKeyReverse = `chat_${contact.username}_${currentUser.username}`;
-        // Get messages sent by current user and by contact
+
         let messages = JSON.parse(localStorage.getItem(chatKey)) || [];
         const reverseMessages = JSON.parse(localStorage.getItem(chatKeyReverse)) || [];
-        // Combine and sort all messages by timestamp ascending
-        messages = [...messages, ...reverseMessages].sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
-        // Get the last message if exists
+
+        messages = messages.concat(reverseMessages).sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+
+        // Get the last message if it exists
         const lastMessage = messages.length > 0 ? messages[messages.length - 1] : null;
-        // Get the user's online status or default to offline with no last seen
+
+        // Get online status info
         const status = userStatuses[contact.username] || { online: false, lastSeen: null };
 
-        // Return contact object augmented with last message, status, and group flag
-        return { ...contact, lastMessage, status, isGroup: false };
-    });
+        // Push the result into the new array
+        contactsWithLastMessage.push({
+            ...contact,
+            lastMessage,
+            status,
+            isGroup: false
+        });
+    }
 
-    // For each group, get the last message in the group chat
-    const groupsWithLastMessage = groups.map(group => {
+    const groupsWithLastMessage = [];
+
+    for (let i = 0; i < groups.length; i++) {
+        const group = groups[i];
         const groupChatKey = `group_chat_${group.id}`;
         const messages = JSON.parse(localStorage.getItem(groupChatKey)) || [];
         const lastMessage = messages.length > 0 ? messages[messages.length - 1] : null;
-        // Return group object with last message and group flag true
-        return { ...group, lastMessage, isGroup: true };
+
+        groupsWithLastMessage.push({
+            ...group,
+            lastMessage,
+            isGroup: true
+        });
+    }
+
+
+    // Merge contacts and groups, then sort by latest message timestamp
+    const allContacts = [...contactsWithLastMessage, ...groupsWithLastMessage].sort((a, b) => {
+        const timeA = a.lastMessage?.timestamp || 0;
+        const timeB = b.lastMessage?.timestamp || 0;
+        return new Date(timeB) - new Date(timeA);
     });
 
-    // Combine contacts and groups into one list
-    const allContacts = [...contactsWithLastMessage, ...groupsWithLastMessage];
-    // Sort combined list by most recent last message timestamp descending
-    allContacts.sort((a, b) => {
-        if (!a.lastMessage && !b.lastMessage) return 0;
-        if (!a.lastMessage) return 1; // contacts without last message go to bottom
-        if (!b.lastMessage) return -1;
-        return new Date(b.lastMessage.timestamp) - new Date(a.lastMessage.timestamp);
-    });
-
-    // For each contact or group, create and append a UI element to display it
-    allContacts.forEach(contact => {
+    for (let i = 0; i < allContacts.length; i++) {
+        const contact = allContacts[i];
         const contactItem = document.createElement('div');
         contactItem.className = 'contact-item';
 
-        // Prepare the last message text to display
-        let lastMessageText = 'No messages yet';
-        if (contact.lastMessage) {
-            // If current user sent the last message, display 'You', else show sender username
-            const sender = contact.lastMessage.sender === currentUser.username ? 'You' : contact.lastMessage.sender;
-            lastMessageText = `${sender}: ${contact.lastMessage.text}`;
-        }
+        const lastMessage = contact.lastMessage;
+        const sender = lastMessage?.sender === currentUser.username ? 'You' : lastMessage?.sender;
+        const lastMessageText = lastMessage ? `${sender}: ${lastMessage.text}` : 'No messages yet';
 
         if (contact.isGroup) {
-            // For groups, display group name, last message, and member count
             contactItem.innerHTML = `
-                <div class="contact-info">
-                    <div class="contact-name">${contact.name} (Group)</div>
-                    <div class="last-message">${lastMessageText}</div>
-                    <div class="members-count">${contact.members.length} members</div>
-                </div>
-                <button class="remove-contact" data-group-id="${contact.id}">Leave</button>
-            `;
-            // Add click event to select the group chat when contact info is clicked
-            contactItem.querySelector('.contact-info').addEventListener('click', () => selectGroup(contact));
-            // Add click event to leave the group when 'Leave' button is clicked (stop event propagation)
-            contactItem.querySelector('.remove-contact').addEventListener('click', function(e) {
-                e.stopPropagation();
+            <div class="contact-info">
+                <div class="contact-name">${contact.name} (Group)</div>
+                <div class="last-message">${lastMessageText}</div>
+                <div class="members-count">${contact.members.length} members</div>
+            </div>
+            <button class="remove-contact" data-group-id="${contact.id}">Leave</button>
+        `;
+            contactItem.querySelector('.contact-info').onclick = () => selectGroup(contact);
+            contactItem.querySelector('.remove-contact').onclick = (event) => {
+                event.stopPropagation();
                 leaveGroup(contact.id);
-            });
+            };
         } else {
-            // For individual contacts, show username with online/offline status indicator
-            let lastSeenText = 'Never';
-            if (contact.status.lastSeen) {
-                lastSeenText = formatDate(contact.status.lastSeen);
-            }
+            const lastSeenText = contact.status.lastSeen ? formatDate(contact.status.lastSeen) : 'Never';
+            const statusText = contact.status.online ? 'Online' : `Last seen: ${lastSeenText}`;
 
             contactItem.innerHTML = `
-                <div class="contact-info">
-                    <div class="contact-name">
-                        ${contact.username}
-                        <span class="status-indicator ${contact.status.online ? 'status-online' : 'status-offline'}"></span>
-                    </div>
-                    <div class="last-message">${lastMessageText}</div>
-                    <div class="last-seen">${contact.status.online ? 'Online' : 'Last seen: ' + lastSeenText}</div>
+            <div class="contact-info">
+                <div class="contact-name">
+                    ${contact.username}
+                    <span class="status-indicator ${contact.status.online ? 'status-online' : 'status-offline'}"></span>
                 </div>
-                <button class="remove-contact" data-username="${contact.username}">Remove</button>
-            `;
-            // Add click event to select individual contact chat on clicking contact info
-            contactItem.querySelector('.contact-info').addEventListener('click', () => selectContact(contact));
-            // Add click event to remove the contact when 'Remove' button clicked (stop event propagation)
-            contactItem.querySelector('.remove-contact').addEventListener('click', function(e) {
-                e.stopPropagation();
+                <div class="last-message">${lastMessageText}</div>
+                <div class="last-seen">${statusText}</div>
+            </div>
+            <button class="remove-contact" data-username="${contact.username}">Remove</button>
+        `;
+            contactItem.querySelector('.contact-info').onclick = () => selectContact(contact);
+            contactItem.querySelector('.remove-contact').onclick = (event) => {
+                event.stopPropagation();
                 removeContact(contact.username);
-            });
+            };
         }
 
-        // Append the contact or group element to the contacts list container
         contactsList.appendChild(contactItem);
-    });
+    }
+
 }
 
-// Remove a contact by username and update storage and UI accordingly
-function removeContact(username) {
+/* removeContact()
+  
+  - Updates the contact list in localStorage by removing the selected contact.
+  - Deletes associated chat messages from localStorage.
+  - Removes the contact's HTML element from the UI.
+  - If the removed contact was currently selected in chat, the chat area is cleared. */
+
+const removeContact = (username) => {
     const currentUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
     let contacts = JSON.parse(localStorage.getItem(`contacts_${currentUser.username}`)) || [];
 
@@ -146,8 +158,13 @@ function removeContact(username) {
 }
 
 
-// Add a new contact (friend) for the current user and reciprocally add current user to the other user's contacts
-function addContact(user) {
+/* addContact()
+  
+  - Checks if the contact already exists; if not, adds them.
+  - Updates both users' contact lists for a mutual (reciprocal) friendship.
+  - Closes the "Add Friend" modal and refreshes the contact list UI. */
+
+const addContact = (user) => {
     const currentUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
     // Get current user's contacts
     const contacts = JSON.parse(localStorage.getItem(`contacts_${currentUser.username}`)) || [];
@@ -171,8 +188,13 @@ function addContact(user) {
     }
 }
 
-// Filter the user list based on a search term, excluding current user and existing contacts
-function filterUsers(searchTerm) {
+/* filterUsers()
+  
+  - Excludes the currently logged-in user and already-added contacts.
+  - Performs a case-insensitive search on usernames and emails.
+  - Passes the filtered list to `displayUserList()` for rendering in the UI. */
+
+const filterUsers = (searchTerm) => {
     const currentUser = JSON.parse(localStorage.getItem('loggedInUser'));
     const allUsers = JSON.parse(localStorage.getItem('users')) || [];
     const contacts = JSON.parse(localStorage.getItem(`contacts_${currentUser.username}`)) || [];
@@ -184,57 +206,66 @@ function filterUsers(searchTerm) {
         user.username !== currentUser.username &&
         !contacts.some(contact => contact.username === user.username) &&
         (user.username.toLowerCase().includes(searchTerm) ||
-        (user.email && user.email.toLowerCase().includes(searchTerm)))
+            (user.email && user.email.toLowerCase().includes(searchTerm)))
     );
 
-    // Display the filtered list of users
     displayUserList(filteredUsers);
 }
 
-// Load the list of all users excluding current user and existing contacts, for adding new contacts
-function loadUserList() {
+/* loadUserList()
+  
+  - Filters out the current user and their existing contacts.
+  - Passes the available users to `displayUserList()` for UI display. */
+
+const loadUserList = () => {
     const currentUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
     const allUsers = JSON.parse(localStorage.getItem('users')) || [];
     const contacts = JSON.parse(localStorage.getItem(`contacts_${currentUser.username}`)) || [];
 
-    // Filter users excluding current user and existing contacts
     const availableUsers = allUsers.filter(user =>
         user.username !== currentUser.username &&
         !contacts.some(contact => contact.username === user.username)
     );
 
-    // Display the filtered user list
     displayUserList(availableUsers);
 }
 
-// Render a list of user entries with an 'Add' button for each user
-function displayUserList(users) {
-    const userList = document.getElementById('userList');
-    userList.innerHTML = ''; // Clear existing list
+/* displayUserList()
+  
+  - Displays a message if no users are found.
+  - Creates user cards dynamically and appends them to the DOM.
+  - Each user card includes username, email, and an "Add" button.
+  - Clicking the button invokes `addContact()` for that user. */
 
-    // If no users found, display a message
+const displayUserList = (users) => {
+    const userList = document.getElementById('userList');
+    userList.innerHTML = '';
+
     if (users.length === 0) {
         userList.innerHTML = '<div class="no-users-found">No users found</div>';
         return;
     }
 
-    // For each user, create a user item element with username, email and Add button
-    users.forEach(user => {
+    for (let i = 0; i < users.length; i++) {
+        const user = users[i];
         const userItem = document.createElement('div');
         userItem.className = 'user-item';
+
         userItem.innerHTML = `
-            <div>
-                <div class="user-item-username"><strong>Username</strong>: ${user.username}</div>
-                <div class="user-item-email"><strong>Email</strong>: ${user.email || 'No email'}</div>
-            </div>
-            <button class="add-user-btn" data-username="${user.username}">Add</button>
-        `;
-        // Add click listener on Add button to add this user as contact
-        userItem.querySelector('.add-user-btn').addEventListener('click', function() {
+        <div>
+            <div class="user-item-username"><strong>Username</strong>: ${user.username}</div>
+            <div class="user-item-email"><strong>Email</strong>: ${user.email || 'No email'}</div>
+        </div>
+        <button class="add-user-btn" data-username="${user.username}">Add</button>
+    `;
+
+        userItem.querySelector('.add-user-btn').addEventListener('click', () => {
             addContact(user);
         });
+
         userList.appendChild(userItem);
-    });
+    }
+
 }
 
 
