@@ -1,20 +1,22 @@
-// Selects a single contact to chat with and updates the UI accordingly
-function selectContact(contact) {
-    // Hide welcome message and show chat UI elements
+/* selectContact(contact)
+   - Prepares the chat UI to show a one-on-one conversation with the selected contact.
+   - Hides the welcome message, shows chat area and message input.
+   - Updates contact name, online/offline status indicator, last seen info.
+   - Loads and displays the contact's messages.
+   - Marks the chat area as a personal chat (not group). */
+
+const selectContact = (contact) => {
     document.getElementById('welcomeMessage').style.display = 'none';
     document.getElementById('chatArea').style.display = 'flex';
     document.getElementById('chatArea').style.flexDirection = 'column';
     document.getElementById('messageInputArea').style.display = 'flex';
     document.getElementById('chatHeader').style.display = 'flex';
 
-    // Set the current contact's name in the chat header
     document.getElementById('currentContactName').textContent = contact.username;
 
-    // Update the contact's online/offline status indicator
     const statusIndicator = document.getElementById('contactStatusIndicator');
     statusIndicator.className = `status-indicator ${contact.status && contact.status.online ? 'status-online' : 'status-offline'}`;
 
-    // Update the last seen text based on the contact's status
     const lastSeenElement = document.getElementById('contactLastSeen');
     if (contact.status && contact.status.online) {
         lastSeenElement.textContent = 'Online';
@@ -24,82 +26,82 @@ function selectContact(contact) {
         lastSeenElement.textContent = 'Last seen: Never';
     }
 
-    // Load and display chat messages for this contact
     displayMessages(contact.username);
 
-    // Store current contact info on chatArea element dataset for reference
     const chatArea = document.getElementById('chatArea');
     chatArea.dataset.currentContact = contact.username;
     chatArea.dataset.isGroup = 'false';
 
-    // Scroll chat to bottom to show latest messages
     chatArea.scrollTop = chatArea.scrollHeight;
 
-    // Hide typing indicator initially
     document.getElementById('typingIndicator').style.display = 'none';
 }
 
-// Selects a group chat and updates the UI accordingly
-function selectGroup(group) {
-    // Hide welcome message and show chat UI elements
+/* selectGroup(group)
+   - Prepares the chat UI for a group conversation.
+   - Hides welcome message and contact status indicator, shows chat area and message input.
+   - Displays group name with member count.
+   - Loads and displays group messages.
+   - Marks the chat area as a group chat. */
+
+const selectGroup = (group) => {
     document.getElementById('welcomeMessage').style.display = 'none';
     document.getElementById('chatArea').style.display = 'flex';
     document.getElementById('chatArea').style.flexDirection = 'column';
     document.getElementById('messageInputArea').style.display = 'flex';
     document.getElementById('chatHeader').style.display = 'flex';
 
-    // Hide the individual contact status indicator (not applicable to groups)
     document.getElementById('typingIndicator').style.display = 'none';
     document.getElementById('contactStatusIndicator').style.display = 'none';
 
-    // Show group name with (Group) label and display number of members
     document.getElementById('currentContactName').textContent = `${group.name} (Group)`;
     document.getElementById('contactLastSeen').textContent = `${group.members.length} members`;
 
-    // Load and display group chat messages
     displayGroupMessages(group.id);
 
-    // Store current group info on chatArea element dataset for reference
     const chatArea = document.getElementById('chatArea');
     chatArea.dataset.currentContact = group.id;
     chatArea.dataset.isGroup = 'true';
 
-    // Scroll chat to bottom to show latest messages
     chatArea.scrollTop = chatArea.scrollHeight;
 }
 
-// Resets the chat area UI back to its initial state (no contact/group selected)
-function resetChatArea() {
-    // Show welcome message and hide chat UI elements
+/* resetChatArea()
+   - Resets the chat UI to initial state.
+   - Shows welcome message and hides chat area, input, header, and typing indicator.
+   - Clears chat content and resets dataset attributes. */
+
+const resetChatArea = () => {
     document.getElementById('welcomeMessage').style.display = 'flex';
     document.getElementById('chatArea').style.display = 'none';
     document.getElementById('messageInputArea').style.display = 'none';
     document.getElementById('chatHeader').style.display = 'none';
     document.getElementById('typingIndicator').style.display = 'none';
 
-    // Clear chat messages and reset dataset attributes
     const chatArea = document.getElementById('chatArea');
     chatArea.innerHTML = '';
     chatArea.dataset.currentContact = '';
     chatArea.dataset.isGroup = 'false';
 }
 
-// Updates the statuses of contacts and the UI accordingly
-function updateContactStatuses() {
-    const currentUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
-    if (!currentUser) return; // Exit if no user logged in
+/* updateContactStatuses()
+   - Updates the status of the logged-in user to online.
+   - Fetches and updates the online/offline status and last seen info of the currently selected contact.
+   - Shows or hides typing indicator based on whether the contact is currently typing.
+   - Refreshes the contacts list display. */
 
-    // Load contacts and global user statuses from localStorage
+const updateContactStatuses = () => {
+    const currentUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
+    if (!currentUser) return;
+
     const userStatuses = JSON.parse(localStorage.getItem('userStatuses')) || {};
 
-    // Update the logged-in user's status to online
     updateUserStatus(currentUser.username, true);
 
     const chatArea = document.getElementById('chatArea');
     const currentContact = chatArea.dataset.currentContact;
     const isGroup = chatArea.dataset.isGroup === 'true';
 
-    // If a contact (not group) is currently selected, update their status indicator and last seen info
     if (currentContact && !isGroup) {
         const contactStatus = userStatuses[currentContact] || { online: false, lastSeen: null };
         const statusIndicator = document.getElementById('contactStatusIndicator');
@@ -114,42 +116,41 @@ function updateContactStatuses() {
             lastSeenElement.textContent = 'Last seen: Never';
         }
 
-        // Show or hide typing indicator based on whether the contact is typing
         const typingIndicator = document.getElementById('typingIndicator');
         const isTyping = checkTypingStatus(currentContact, currentUser.username);
         typingIndicator.style.display = isTyping ? 'block' : 'none';
     }
 
-    // Reload the contact list UI to reflect updated statuses
     loadContacts();
 }
 
-// Sets up all event listeners for UI interactions such as buttons, inputs, and modals
-function setupEventListeners() {
-    // Logout button triggers logout function
+/* setupEventListeners():
+   - Sets up event listeners for:
+       - Logout button
+       - Sending messages (button click and Enter key)
+       - Typing status updates with debounce
+       - Opening and closing modals for adding friends and creating groups
+       - Searching/filtering users
+       - Creating groups confirmation
+   - Manages UI display toggling for modals and updates user lists accordingly.*/
+
+const setupEventListeners = () => {
     document.getElementById('logoutBtn').addEventListener('click', logout);
-
-    // Send button triggers sending a message
     document.getElementById('sendButton').addEventListener('click', sendMessage);
-
-    // Pressing Enter in the message input sends the message
-    document.getElementById('messageInput').addEventListener('keypress', function(e) {
+    document.getElementById('messageInput').addEventListener('keypress', (e) => {
         if (e.key === 'Enter') sendMessage();
     });
 
-    // Handle typing status updates with debounce
     const messageInput = document.getElementById('messageInput');
     let typingTimeout = null;
-    messageInput.addEventListener('input', function() {
+    messageInput.addEventListener('input', () => {
         const chatArea = document.getElementById('chatArea');
         const contactUsername = chatArea.dataset.currentContact;
         const loggedInUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
 
         if (contactUsername) {
-            // Notify system that the user started typing
             updateTypingStatus(loggedInUser.username, contactUsername, true);
 
-            // Clear previous timeout and set a new one to signal typing stopped after 2 seconds of inactivity
             if (typingTimeout) clearTimeout(typingTimeout);
             typingTimeout = setTimeout(() => {
                 updateTypingStatus(loggedInUser.username, contactUsername, false);
@@ -157,59 +158,50 @@ function setupEventListeners() {
         }
     });
 
-    // Add Friend Modal - open modal and prepare list when button clicked
     const addFriendModal = document.getElementById('addFriendModal');
     const addFriendBtn = document.getElementById('addFriendBtn');
     const closeModal = document.getElementById('closeModal');
     const searchInput = document.getElementById('searchUsers');
 
-    addFriendBtn.addEventListener('click', function() {
+    addFriendBtn.addEventListener('click', () => {
         addFriendModal.style.display = 'block';
         loadUserList();
-        searchInput.value = ''; // Clear search field on open
+        searchInput.value = '';
     });
 
-    // Close add friend modal on close button click
-    closeModal.addEventListener('click', function() {
+    closeModal.addEventListener('click', () => {
         addFriendModal.style.display = 'none';
     });
 
-    // Close add friend modal if clicking outside the modal content area
-    window.addEventListener('click', function(event) {
+    window.addEventListener('click', (event) => {
         if (event.target === addFriendModal) {
             addFriendModal.style.display = 'none';
         }
     });
 
-    // Filter user list as input is typed in the search box
-    searchInput.addEventListener('input', function() {
+    searchInput.addEventListener('input', () => {
         filterUsers(this.value);
     });
 
-    // Create Group Modal elements and event listeners
     const createGroupModal = document.getElementById('createGroupModal');
     const createGroupBtn = document.getElementById('createGroupBtn');
     const closeGroupModal = document.getElementById('closeGroupModal');
     const createGroupConfirmBtn = document.getElementById('createGroupConfirmBtn');
 
-    // Show create group modal and load friends for selection
-    createGroupBtn.addEventListener('click', function() {
+    createGroupBtn.addEventListener('click', () => {
         createGroupModal.style.display = 'block';
         loadFriendsForGroup();
     });
 
-    // Close create group modal on close button click
-    closeGroupModal.addEventListener('click', function() {
+    closeGroupModal.addEventListener('click', () => {
         createGroupModal.style.display = 'none';
     });
 
-    // Close create group modal if clicking outside the modal content area
-    window.addEventListener('click', function(event) {
+    window.addEventListener('click', (event) => {
         if (event.target === createGroupModal) {
             createGroupModal.style.display = 'none';
         }
     });
 
-    // Create the group when confirmation button is clicked
     createGroupConfirmBtn.addEventListener('click', createGroup);
 }
