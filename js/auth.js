@@ -1,11 +1,12 @@
-// Checks if a user is currently logged in by looking in sessionStorage
-// If no user is found, it displays a message prompting to login and returns false
-// Otherwise, returns the logged-in user object
-function checkAuth() {
-    const loggedInUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
+/* checkAuth()
+   - Checks if a user is currently logged in by looking for 'loggedInUser' in sessionStorage.
+   - If no user is found, it replaces the main app container content with a message prompting login
+     and returns false.
+   - If a user is logged in, it returns the parsed user object. */
 
+const checkAuth = () => {
+    const loggedInUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
     if (!loggedInUser) {
-        // Display message if user is not logged in
         document.getElementById('appContainer').innerHTML = `
             <div class="no-user">
                 <h2>You're not logged in</h2>
@@ -17,24 +18,26 @@ function checkAuth() {
     return loggedInUser;
 }
 
-// Logs out the current user by updating their status to offline,
-// removing user info from localStorage, and redirecting to login page
-function logout() {
+/* logout()
+   - Logs out the current user by updating their status to offline via updateUserStatus(),
+     removing 'loggedInUser' from sessionStorage, and redirecting to the login page. */
+
+const logout = () => {
     const currentUser = JSON.parse(sessionStorage.getItem('loggedInUser'));
     if (currentUser) {
-        updateUserStatus(currentUser.username, false); // Update user status to offline
+        updateUserStatus(currentUser.username, false);
     }
-    sessionStorage.removeItem('loggedInUser'); // Remove user from sessionStorage
-    window.location.href = './login.html'; // Redirect to login page
+    sessionStorage.removeItem('loggedInUser');
+    window.location.href = './login.html';
 }
 
-// Updates the user profile section in the UI with username, email, and profile initial
-function updateUserProfile(user) {
-    // Set displayed username or fallback to 'User'
+/* updateUserProfile:
+   - Updates the UI with the user's profile information:
+     username, email, and profile initial displayed in specific DOM elements.*/
+
+const updateUserProfile = (user) => {
     document.getElementById('usernameDisplay').textContent = user.username || 'User';
-    // Set displayed email or leave blank if none
     document.getElementById('userEmailDisplay').textContent = user.email || '';
-    // Display the first letter of username capitalized or 'U' if username missing
     const initial = user.username ? user.username.charAt(0).toUpperCase() : 'U';
     document.getElementById('profileInitial').textContent = initial;
 }
